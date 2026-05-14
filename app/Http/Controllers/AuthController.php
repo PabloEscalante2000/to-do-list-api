@@ -13,7 +13,7 @@ class AuthController extends Controller
 {
     use ApiResponses;
     public function login(LoginRequest $request){
-        if(!Auth::attempt($request->only(["email,password"]))){
+        if(!Auth::attempt($request->only(["email", "password"]))){
             return $this->error("Invalid Credentials",401);
         }
 
@@ -23,7 +23,6 @@ class AuthController extends Controller
                 "API Token for ". $user->email
             )->plainTextToken
         ]);
-                
     }
 
     public function register(RegisterRequest $request){
@@ -42,6 +41,6 @@ class AuthController extends Controller
 
     public function logout(Request $request) {
         $request->user()->currentAccessToken()->delete();
-        return $this->ok("Logged Out");
+        return response()->noContent();
     }
 }
