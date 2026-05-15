@@ -15,7 +15,7 @@ class TaskController extends Controller
      */
     public function index()
     {
-        //
+        return TaskResource::collection(Task::paginate());
     }
 
     /**
@@ -42,12 +42,10 @@ class TaskController extends Controller
     public function update(StoreTaskRequest $request, Task $task)
     {
 
-        if($task->user_id !== $request->user()->id){
+        if($task->user_id != $request->user()->id){
             return response()->json(
                 [
-                    "message" => "Forbidden",
-                    "task" => $task,
-                    "user" => $request->user()->id
+                    "message" => "Forbidden"
                 ],
                 403
             );
@@ -61,8 +59,20 @@ class TaskController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Task $task)
+    public function destroy(Request $request, Task $task)
     {
-        //
+        // No es su task
+        if($task->user_id != $request->user()->id){
+            return response()->json(
+                [
+                    "message" => "Forbidden"
+                ],
+                403
+            );
+        }
+
+        $task->delete();
+
+        return response()->noContent(204);
     }
 }
